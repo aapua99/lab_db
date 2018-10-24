@@ -1,0 +1,31 @@
+DROP DATABASE IF EXISTS Popov15;
+CREATE DATABASE Popov15;
+USE Popov15;
+CREATE TABLE shop(
+adress VARCHAR(50) NOT NULL,
+name VARCHAR(50) NOT NULL,
+manager VARCHAR(50) NOT NULL,
+PRIMARY KEY (name)
+);
+
+CREATE TABLE fruits(
+name VARCHAR(50) NOT NULL,
+price DECIMAL(10) NOT NULL,
+name_shop VARCHAR(50) NOT NULL,
+FOREIGN KEY(name_shop) REFERENCES shop(name),
+PRIMARY KEY (name)
+);
+
+CREATE TABLE city(
+name VARCHAR(50) NOT NULL,
+PRIMARY KEY (name)
+);
+
+CREATE TABLE suppliers(
+name VARCHAR(50) NOT NULL,
+price decimal(10) NOT NULl,
+city VARCHAR(50) NOT NULL,
+fruit VARCHAR(50) NOT NULL,
+FOREIGN KEY(fruit) REFERENCES fruits(name),
+FOREIGN KEY(city) REFERENCES city(name)
+)
