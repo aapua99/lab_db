@@ -3,9 +3,6 @@ package ua.iot.lviv.andriy;
 import java.sql.*;
 import java.util.Scanner;
 
-/**
- * Hello world!
- */
 public class App {
     private static final String url = "jdbc:mysql://localhost:3306/popov15?serverTimezone=UTC&useSSL=false";
     private static final String user = "root";
@@ -22,15 +19,27 @@ public class App {
             connection = DriverManager.getConnection(url, user, password);
 
             statement = connection.createStatement();
+            while(true){
+                System.out.println("1. Read data");
+                System.out.println("2. Update city");
+                System.out.println("3. Delate suppliers");
+                System.out.println("4. Insert suppliers");
+                Scanner input = new Scanner(System.in);
+                int k=input.nextInt();
+                switch (k){
+                    case 1: readData();
+                    break;
+                    case 2: updateDataCity();
+                    break;
+                    case 3: deleteDataSuppliers();
+                    break;
+                    case 4: insertDataCity();
+                    break;
+                }
+            }
 
 
 
-            updateDataCity();
-            readData();
-            insertDataCity();
-            readData();
-            DeleteDataCity();
-            readData();
 
 
         } catch (ClassNotFoundException e) {
@@ -60,17 +69,6 @@ public class App {
 
     private static void readData() throws SQLException {
 
-        rs = statement.executeQuery("SELECT * FROM  city");
-
-        System.out.format("\nTable City --------------------\n");
-        System.out.printf("%-18s\n", "Name");
-        while (rs.next()) {
-
-            String name = rs.getString("Name");
-
-            // Simply Print the results
-            System.out.format("%-18s\n", name);
-        }
 
 
         rs = statement.executeQuery("SELECT * FROM fruits");
@@ -87,13 +85,11 @@ public class App {
 
         rs = statement.executeQuery("SELECT * FROM suppliers");
         System.out.println("\nTable Suppliers --------------------------------\n");
-        System.out.format("%-15s %-10s %-10s %-15s\n", "Name", "Price", "City", "Fruit");
+        System.out.format("%-15s %-15s\n", "Name", "City" );
         while (rs.next()) {
             String name = rs.getString("name");
-            double price = rs.getDouble("price");
             String city = rs.getString("city");
-            String fruit = rs.getString("fruit");
-            System.out.format("%-15s %-10.2f %-10s %-15s\n", name, price, city, fruit);
+            System.out.format("%-15s %-15s\n", name, city);
         }
 
         rs = statement.executeQuery("SELECT * FROM shop");
@@ -106,6 +102,21 @@ public class App {
             System.out.printf("%-12s %-20s %-18s\n", name, address, manager);
         }
 
+        rs = statement.executeQuery("SELECT * FROM  suppliers_fruits");
+
+        System.out.format("\nTable Suppliers_Fruit --------------------\n");
+        System.out.printf("%-15s %-15s %-10s\n", "Name","Fruit","Price");
+        while (rs.next()) {
+
+            String supplier = rs.getString("supplier");
+            String fruit=rs.getString("fruit");
+            double price=rs.getDouble("price");
+
+            // Simply Print the results
+            System.out.format("%-15s %-15s %-10.2f\n", supplier, fruit,price);
+        }
+
+
     }
     private static void updateDataCity() throws SQLException {
         Scanner input = new Scanner(System.in);
@@ -113,31 +124,35 @@ public class App {
         String city = input.next();
         System.out.println("Input new name city for %s: " + city);
         String citynew = input.next();
-        statement.execute("UPDATE city SET name='" + citynew + "' WHERE name='" + city + "';");
+        statement.execute("UPDATE suppliers SET city='" + citynew + "' WHERE city='" + city + "';");
     }
     private static void insertDataCity() throws SQLException {
         Scanner input = new Scanner(System.in);
-        System.out.println("Input a new name city: ");
-        String newcity = input.next();
+        System.out.println("Input a new name suppliers: ");
+        String newname = input.next();
+        System.out.println("Input a new suppliers city: ");
+        String city=input.next();
 
 
         PreparedStatement preparedStatement;
-        preparedStatement = connection.prepareStatement("INSERT city VALUES (?)");
-        preparedStatement.setString(1, newcity);
+        preparedStatement = connection.prepareStatement("INSERT suppliers VALUES (?,?)");
+        preparedStatement.setString(1, newname);
+        preparedStatement.setString(2, city);
         int n = preparedStatement.executeUpdate();
         System.out.println("Count rows that inserted: " + n);
     }
 
-    private static void DeleteDataCity() throws SQLException {
+    private static void deleteDataSuppliers() throws SQLException {
         Scanner input = new Scanner(System.in);
-        System.out.println("Input a name city for delete: ");
-        String city = input.next();
+        System.out.println("Input a name suppliers for delete: ");
+        String name = input.next();
+
 
         // 3. executing SELECT query
         //   PreparedStatements can use variables and are more efficient
         PreparedStatement preparedStatement;
-        preparedStatement=connection.prepareStatement("DELETE FROM city WHERE name=?");
-        preparedStatement.setString(1, city);
+        preparedStatement=connection.prepareStatement("DELETE FROM suppliers WHERE name=?");
+        preparedStatement.setString(1, name);
         int n=preparedStatement.executeUpdate();
         System.out.println("Count rows that deleted: "+n);
     }
